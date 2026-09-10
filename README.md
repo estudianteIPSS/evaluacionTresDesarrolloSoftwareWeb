@@ -1,8 +1,8 @@
-# Sistema de Gestión de Proyectos
+# Sistema de Gestión de Proyectos Tech Solutions 
 
-Aplicación web desarrollada con **Laravel** para la gestión de proyectos de la empresa ficticia **Tech Solutions**.
-
-El proyecto fue desarrollado como parte de la evaluación de la **Unidad N.º 2 de Desarrollo de Software Web I**, incorporando persistencia de datos mediante ORM, autenticación, autorización, cifrado de contraseñas y autenticación mediante JWT para la API.
+El proyecto fue desarrollado usando el esqueleto y base de los 
+controladores fue creado como parte de la Unidad 1 y los modelos fueron creados como parte de la 
+unidad 2
 
 ---
 
@@ -18,6 +18,7 @@ El proyecto fue desarrollado como parte de la evaluación de la **Unidad N.º 2 
 * **JWT (JSON Web Token)**
 * **Composer**
 * **Node.js / npm**
+* **L5-Swagger / OpenAPI**
 
 ---
 
@@ -57,6 +58,7 @@ El sistema permite:
 * Validar los datos recibidos.
 * Cifrar las contraseñas antes de almacenarlas.
 * Autorizar el acceso a los proyectos mediante Policies.
+* Documentar y probar la API mediante Swagger/OpenAPI.
 
 ---
 
@@ -131,8 +133,11 @@ app/
 ├── Policies/
 │   └── ProjectPolicy.php
 │
-└── Services/
-    └── UfService.php
+├── Services/
+|   └── UfService.php
+|
+└── Swagger/
+    └── OpenApiSpec.php
 
 database/
 ├── migrations/
@@ -153,6 +158,7 @@ routes/
 
 config/
 ├── auth.php
+├── l5-swagger.php
 └── ...
 
 .env.example
@@ -168,7 +174,7 @@ artisan
 ## 6.1. Clonar o Descargar el repositorio
 
 ```bash
-git clone https://github.com/estudianteIPSS/evaluacionDosDesarrolloSoftwareWeb.git
+git clone https://github.com/estudianteIPSS/evaluacionTresDesarrolloSoftwareWeb.git
 cd "carpeta del repositorio"
 ```
 
@@ -348,94 +354,104 @@ Esto compila los recursos utilizados por Vite y Tailwind CSS.
 
 ---
 
-# 14. Ejecutar la aplicación
+# 14. API REST
 
-Iniciar el servidor de desarrollo de Laravel:
+La aplicación incorpora una API REST protegida mediante autenticación **JWT**.
+
+## Rutas de proyectos
+
+| Método | Ruta | Descripción | Respuesta |
+| ------ | ---- | ----------- | --------- |
+| GET | `/api/projects` | Obtiene los proyectos del usuario autenticado | 200 |
+| POST | `/api/projects` | Crea un proyecto | 201 |
+| GET | `/api/projects/{project}` | Obtiene un proyecto por ID | 200 / 404 |
+| PUT/PATCH | `/api/projects/{project}` | Actualiza un proyecto | 200 / 404 |
+| DELETE | `/api/projects/{project}` | Elimina un proyecto | 204 / 404 |
+
+Las rutas de proyectos requieren un token JWT válido mediante:
+
+```text
+Authorization: Bearer {token}
+```
+
+# 15. Documentación y pruebas mediante Swagger
+
+La API está documentada mediante OpenAPI utilizando L5-Swagger.
+
+Generar la documentación con:
+
+```bash
+php artisan l5-swagger:generate
+```
+
+Iniciar el servidor:
 
 ```bash
 composer run dev
 ```
-
-La aplicación estará disponible normalmente en:
-
-```text
-http://127.0.0.1:8000
-```
-
----
-
-## Solución de problemas
-
-Si Laravel muestra el error:
-
-"Please provide a valid cache path."
-
-verificar que exista:
-
-storage/framework/views
-
-Si no existe, crear el directorio y ejecutar:
+Swagger UI estará disponible en:
 
 ```bash
-php artisan optimize:clear
+http://127.0.0.1:8000/api/documentation
 ```
+## Obtener token JWT mediante Postman
 
-# 15. Acceso al sistema web
+Para probar los endpoints protegidos de la API, primero se debe obtener un token JWT mediante el endpoint de inicio de sesión.
 
-Al acceder a:
+En Postman crear una solicitud:
 
 ```text
-/login
+POST http://127.0.0.1:8000/api/login
+```
+En Body → raw → JSON, ingresar:
+
+```bash
+{
+    "email": "admi@tech.com",
+    "password": "desarrollo_software_1"
+}
 ```
 
-se puede iniciar sesión utilizando:
+La API devolverá una respuesta similar a:
 
 ```text
-Correo:
-admi@tech.com
-
-Contraseña:
-desarrollo_software_1
+{
+    "message": "Inicio de sesión correcto.",
+    "token": "eyJ...",
+    "token_type": "Bearer"
+}
 ```
 
-También es posible registrar nuevos usuarios desde:
+Copiar el valor de token y utilizarlo para autenticar las solicitudes protegidas.
 
-```text
-/register
-```
+## Para probar los endpoints protegidos:
 
----
+Obtener el token JWT.
+Seleccionar Authorize en Swagger.
+Ingresar el token.
+Ejecutar los endpoints de la API.
 
-# 16. Rutas web
+# 16. Evidencia de pruebas
 
-Las principales rutas web son:
+Las pruebas de la API fueron realizadas mediante Swagger UI.
 
-| Método | Ruta                         | Descripción                     |
-| ------ | ---------------------------- | ------------------------------- |
-| GET    | `/login`                     | Formulario de inicio de sesión  |
-| POST   | `/login`                     | Procesa el inicio de sesión     |
-| GET    | `/register`                  | Formulario de registro          |
-| POST   | `/register`                  | Procesa el registro             |
-| POST   | `/logout`                    | Cierra la sesión                |
-| GET    | `/projects`                  | Lista los proyectos del usuario |
-| GET    | `/projects/create`           | Formulario de creación          |
-| POST   | `/projects`                  | Crea un proyecto                |
-| GET    | `/projects/{project}`        | Visualiza un proyecto           |
-| GET    | `/projects/{project}/edit`   | Formulario de edición           |
-| PUT    | `/projects/{project}`        | Actualiza un proyecto           |
-| GET    | `/projects/{project}/delete` | Confirmación de eliminación     |
-| DELETE | `/projects/{project}`        | Elimina un proyecto             |
+## Endpoints y pruebas realizadas
 
-Las rutas de proyectos están protegidas mediante el middleware:
+|Prueba	|Método	|Resultado
+| ------ | ---- | ---------- |
+|Crear proyecto	|POST	|201
+|Obtener proyectos	|GET	|200
+|Obtener proyecto por ID	|GET	|200
+|ID inexistente	|GET	|404
+|Actualizar proyecto	|PUT/PATCH	|200
+|Eliminar proyecto	|DELETE	|204
+|ID inexistente	|PUT/PATCH/DELETE	|404
 
-```text
-auth
-```
+## Las capturas de evidencia se encuentran en:
 
-Por lo tanto, un usuario no autenticado no puede acceder a la administración de proyectos.
+docs/evidencias/
 
----
+Incluyen las pruebas principales de creación, consulta, actualización, eliminación y manejo de IDs inexistentes.
 
-comprobar que el usuario haya iniciado sesión antes de acceder al sistema de gestión de proyectos.
 
----
+Esta versión es suficiente: **documenta la API, explica cómo abrir Swagger y deja constancia de las pruebas sin convertir el README en el informe de la evaluación.**
