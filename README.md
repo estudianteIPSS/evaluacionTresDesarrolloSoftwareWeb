@@ -426,10 +426,10 @@ Copiar el valor de token y utilizarlo para autenticar las solicitudes protegidas
 
 ## Para probar los endpoints protegidos:
 
-Obtener el token JWT.
-Seleccionar Authorize en Swagger.
-Ingresar el token.
-Ejecutar los endpoints de la API.
+1. Obtener el token JWT.
+2. Seleccionar Authorize en Swagger.
+3. Ingresar el token.
+4. Ejecutar los endpoints de la API.
 
 # 16. Evidencia de pruebas
 
