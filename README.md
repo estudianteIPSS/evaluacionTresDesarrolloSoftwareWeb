@@ -452,6 +452,3 @@ Las pruebas de la API fueron realizadas mediante Swagger UI.
 docs/evidencias/
 
 Incluyen las pruebas principales de creación, consulta, actualización, eliminación y manejo de IDs inexistentes.
-
-
-Esta versión es suficiente: **documenta la API, explica cómo abrir Swagger y deja constancia de las pruebas sin convertir el README en el informe de la evaluación.**
