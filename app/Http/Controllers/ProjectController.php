@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Project;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use OpenApi\Attributes as OA;
 
 class ProjectController extends Controller
@@ -305,7 +306,7 @@ class ProjectController extends Controller
             )
         ]
     )]
-    public function destroy(Project $project): JsonResponse
+    public function destroy(Project $project): Response
     {
         $this->authorizeProject($project);
 
